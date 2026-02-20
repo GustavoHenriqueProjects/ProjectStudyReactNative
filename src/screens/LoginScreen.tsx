@@ -163,14 +163,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#fff',
   },
-  testModalButton: {
-    marginTop: 16,
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  testModalText: {
-    fontSize: 13,
-    color: '#64748b',
-    textDecorationLine: 'underline',
-  },
 });

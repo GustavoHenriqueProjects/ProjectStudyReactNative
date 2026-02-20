@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
   View,
   TextInput,
@@ -28,7 +28,7 @@ export default function ListScreen({ navigation }: Props) {
   const { user } = useAuth();
   const { showError } = useErrorModal();
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -43,11 +43,11 @@ export default function ListScreen({ navigation }: Props) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showError]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const filteredProducts = useMemo(() => {
     if (!search.trim()) return products;
@@ -185,10 +185,6 @@ const styles = StyleSheet.create({
   welcomeName: {
     fontWeight: '700',
     color: '#0f172a',
-  },
-  welcomeAge: {
-    fontWeight: '400',
-    color: '#64748b',
   },
   chartButton: {
     alignSelf: 'flex-start',
