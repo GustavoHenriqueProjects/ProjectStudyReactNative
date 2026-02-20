@@ -14,11 +14,33 @@ import React, {
   useCallback,
   PropsWithChildren,
 } from 'react';
+import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import api, { setAuthToken, setOnUnauthorized } from '../api/api';
 import { LoginResponse, MeResponse } from '../types';
 
 const TOKEN_KEY = 'auth_token';
+
+// No Snack/web o SecureStore usa IndexedDB em contexto read-only e falha.
+// Usamos armazenamento em memória na web para evitar o erro.
+let webMemoryToken: string | null = null;
+
+async function getStoredToken(): Promise<string | null> {
+  if (Platform.OS === 'web') return webMemoryToken;
+  return await SecureStore.getItemAsync(TOKEN_KEY);
+}
+
+async function setStoredToken(value: string | null): Promise<void> {
+  if (Platform.OS === 'web') {
+    webMemoryToken = value;
+    return;
+  }
+  if (value === null) {
+    await SecureStore.deleteItemAsync(TOKEN_KEY);
+  } else {
+    await SecureStore.setItemAsync(TOKEN_KEY, value);
+  }
+}
 
 interface AuthContextData {
   token: string | null;
@@ -37,11 +59,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     setToken(null);
     setUser(null);
     setAuthToken(null);
-    await SecureStore.deleteItemAsync(TOKEN_KEY);
+    await setStoredToken(null);
   }, []);
 
   useEffect(() => {
-    SecureStore.getItemAsync(TOKEN_KEY).then((stored) => {
+    getStoredToken().then((stored) => {
       if (stored) setToken(stored);
     });
   }, []);
@@ -82,8 +104,8 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     setToken(accessToken);
     // Passo 7: repassa o token para o cliente HTTP (api.ts) para as próximas requisições
     setAuthToken(accessToken);
-    // Passo 8: persiste o token no dispositivo (SecureStore) para manter login ao reabrir o app
-    await SecureStore.setItemAsync(TOKEN_KEY, accessToken);
+    // Passo 8: persiste o token no dispositivo (SecureStore) ou em memória na web
+    await setStoredToken(accessToken);
     // Passo 9: chama GET /auth/me (o interceptor em api.ts adiciona o header no Passo 10)
     // Passo 11: requisição é enviada com Authorization: Bearer <token>
     // Passo 12: backend devolve dados do usuário → setUser(response.data)

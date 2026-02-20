@@ -15,7 +15,7 @@ type Props = StackScreenProps<RootStackParamList, 'Chart'>;
 const CHART_HEIGHT = 240;
 const PADDING = 20;
 
-export default function ChartScreen({}: Props) {
+export default function ChartScreen(_props: Props) {
   const { width } = useWindowDimensions();
   const chartWidth = Math.max(width - PADDING * 2, 280);
 
