@@ -1,14 +1,5 @@
 # React Native (2h)
 
-## Início
-- Abra o link do projeto base: https://snack.expo.dev/@rafaelspereira/processoseletivobase.
-- Faça login no Snack.
-- Faça uma pequena alteração e clique em Save.
-- Confirme que a URL mudou para o seu usuário.
-- Trabalhe na sua cópia.
-
-
-
 ## APIs a serem consumidas
 * **Login**
 
@@ -48,8 +39,4 @@ https://dummyjson.com/products
 
 Retorno:
 interface ProductsResponse -> src/types/index.ts
-
-
-## Entrega
-Salvar e enviar o link da sua versão e o arquivo zip.
 
